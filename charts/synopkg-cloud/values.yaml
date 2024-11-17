@@ -1,0 +1,243 @@
+image:
+  tag: ''  # Deprecated, please use global.imageTag or service specific image tag.
+
+global:
+  imageRegistry: ''
+  imageTag: 'latest'
+  imageRepository: 'synopkgprivatecloud'
+  namespace: default
+
+naming:
+  nameOverride: ''
+  fullNameOverride: ''
+
+mode: private-enterprise
+
+synopkgCloudAppURL: ''
+verboseLogging: false
+verboseMongoLogging: false
+enableMessageQueue: true
+
+frontend:
+  serviceAccountName: ''
+  image:
+    registry: ''
+    imageName: synopkg-cloud-frontend
+    repository: ''
+    tag: ''
+    digest: ''
+    pullPolicy: Always
+  deployment:
+    replicas: 1
+    port: 4202
+    env: []
+  service:
+    name: synopkg-cloud-frontend-service
+    type: ClusterIP
+    port: 8080
+    annotations: {}
+  resources:
+    limits: {}
+    requests:
+      memory: '0.5Gi'
+      cpu: '0.5'
+
+synopkgApi:
+  serviceAccountName: ''
+  image:
+    registry: ''
+    imageName: synopkg-cloud-synopkg-api
+    repository: ''
+    tag: ''
+    digest: ''
+    pullPolicy: Always
+  deployment:
+    replicas: 1
+    port: 4203
+    env: []
+    readinessProbe: {}
+  service:
+    name: synopkg-cloud-synopkg-api-service
+    type: ClusterIP
+    port: 4203
+    annotations: {}
+  resources:
+    limits: {}
+    requests:
+      memory: '1Gi'
+      cpu: '1.0'
+
+fileServer:
+  serviceAccountName: ''
+  image:
+    registry: ''
+    imageName: synopkg-cloud-file-server
+    repository: ''
+    tag: ''
+    digest: ''
+    pullPolicy: Always
+  deployment:
+    port: 5000
+    env: []
+  service:
+    name: synopkg-cloud-file-server-service
+    type: ClusterIP
+    port: 5000
+    annotations: {}
+  resources:
+    limits: {}
+    requests:
+      memory: '0.5Gi'
+      cpu: '0.5'
+  securityContext:
+    enabled: true
+    runAsUser: 10000
+    runAsGroup: 10000
+    fsGroup: 10000
+    fsGroupChangePolicy: "OnRootMismatch"
+
+aggregator:
+  serviceAccountName: ''
+  schedule: '*/10 * * * *'
+  image:
+    registry: ''
+    imageName: synopkg-cloud-aggregator
+    repository: ''
+    tag: ''
+    digest: ''
+    pullPolicy: Always
+  env: []
+  resources:
+    limits: {}
+    requests:
+      memory: '1200M'
+      cpu: '0.5'
+
+messagequeue:
+  serviceAccountName: ''
+  image:
+    registry: ''
+    imageName: synopkg-cloud-messagequeue
+    repository: ''
+    tag: ''
+    digest: ''
+    pullPolicy: Always
+  deployment:
+    port: 61616
+    env: []
+    volumes: {}
+    volumeMounts: {}
+  service:
+    name: synopkg-cloud-messagequeue
+    type: ClusterIP
+    port: 61616
+    annotations: {}
+  resources:
+    limits: {}
+    requests: {}
+
+synopkgCloudWorkflows:
+  enabled: false
+  port: 9000
+  name: 'synopkg-cloud-workflow-controller-service'
+  workflowsNamespace: 'synopkg-cloud-workflows'
+
+  # If externalName is left unset, the applications will look for ane existing service with the name defined
+  # by `synopkgCloudWorkflows.name` in the namespace `synopkgCloudWorkflows.workflowsNamespace`. Use this option if you are
+  # also running the synopkg-agents chart in the same cluster as this synopkg-cloud chart
+  #
+  # If externalName is set, an additional service will be created with the name `synopkgCloudWorkflows.name`
+  # in the global namespace of this chart, and applications will use that service to connect to the workflow controller.
+  # Use this option if your synopkg-agents are running in a different cluster than this synopkg-cloud chart
+  externalName: ''
+
+  # If you find that an externalName service is not working as expected, you can set this to true to create a headless service
+  # which will create an endpoint group as an alternative. Please continue to set `externalName` to the IP address
+  # you wish to direct traffic to as we will use it to populate the endpoint slice.
+  headless: false
+
+# Deprecated, use synopkgApi.deployment.replicas and frontend.deployment.replicas
+replicas:
+  frontend: 1
+  synopkgApi: 1
+
+ingress:
+  skip: false
+
+  # deprecated, use ingress.annotations
+  globalStaticIpName: ''
+  managedCertificates: ''
+  albScheme: ''
+  albListenPorts: ''
+  albCertificateArn: ''
+  class: ''
+
+  annotations:
+    synopkg.app/installed-by: 'helm'
+
+fileStorage:
+  storageClassName: ''
+  size: '30Gi'
+  resourcePolicy: ''
+
+awsS3:
+  enabled: false
+  bucket: ''
+  accelerated: false
+  endpoint: ''
+  enablePathStyleAccess: false
+
+azure:
+  enabled: false
+  container: ''
+
+useCosmosDb: false
+
+gitlab:
+  apiUrl: ''
+  projectId: ''
+  auth:
+    enabled: false
+  mr:
+    enabled: false
+
+github:
+  auth:
+    enabled: false
+  pr:
+    defaultWorkspaceId: ''
+    enabled: false
+    mode: 'webhook'
+    apiUrl: ''
+
+bitbucket:
+  auth:
+    enabled: false
+
+saml:
+  auth:
+    enabled: false
+
+# If you plan to deploy using your own self-signed certs, add them to a config map and provide the name here
+# We will mount the configmap to the pods and import the certs contained within at `self-signed-cert.crt`
+selfSignedCertConfigMap: ''
+vcsHttpsProxy: ''
+
+secret:
+  name: ''
+  synopkgCloudMongoServerEndpoint: ''
+  adminPassword: ''
+  awsS3AccessKeyId: ''
+  awsS3SecretAccessKey: ''
+  azureConnectionString: ''
+  githubAuthClientId: ''
+  githubAuthClientSecret: ''
+  githubWebhookSecret: ''
+  githubAuthToken: ''
+  githubAppId: ''
+  githubPrivateKey: ''
+  githubAppClientId: ''
+  githubAppClientSecret: ''
+  gitlabAccessToken: ''
+
+extraManifests: {}
