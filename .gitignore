@@ -1,0 +1,7 @@
+.idea
+.DS_Store
+
+# We copy this over on automated testing but for local we need to copy it in so ignore
+# if someone forgets to delete before pushing
+charts/synopkg-cloud/templates/secret.yml
+charts/synopkg-agents/templates/secret.yml
